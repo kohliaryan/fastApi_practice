@@ -1,6 +1,7 @@
+from http import HTTPStatus
 from typing import Dict
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -67,3 +68,9 @@ def get_post(post_id: int):
     if post_id not in posts:
         raise HTTPException(status_code=404, detail="Invalid Post Id")
     return posts[post_id]
+
+@app.post("/add", status_code=status.HTTP_201_CREATED)
+def add_post(post: PostSchema):
+    post_id = max(posts.keys()) + 1 if posts else 1
+    posts[post_id] = post.dict()
+    return {"msg": "Post added successfully"}
