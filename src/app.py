@@ -1,12 +1,12 @@
 from typing import Dict
 
-from  fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
 
 class PostSchema(BaseModel):
-    type: str
+    title: str
     description: str
 
 #Dummy seed data
@@ -61,3 +61,9 @@ def read_root():
 @app.get("/posts", response_model=Dict[int, PostSchema])
 def get_all_posts():
     return posts
+
+@app.get("/post/{post_id}", response_model=PostSchema)
+def get_post(post_id: int):
+    if post_id not in posts:
+        raise HTTPException(status_code=404, detail="Invalid Post Id")
+    return posts[post_id]
